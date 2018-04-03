@@ -74,4 +74,5 @@ public:
             throw std::runtime_error("get_solution_vector(): Solution unavailable.");
         }
     }
+    void print_problem(std::ostream &out);
 };

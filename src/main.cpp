@@ -233,7 +233,7 @@ int main() {
 
 
         
-        for (size_t k = 0; k < K; k++) {
+        for (size_t k = 1; k < K-1; k++) {
             /* 
              * Build state and input trust-region:
              *     (x - x0)^T * (x - x0)  +  (u - u0)^T * (u - u0)  <=  Delta
@@ -341,8 +341,8 @@ int main() {
     }
 
 
-    //EcosWrapper solver(socp);
-    MosekWrapper solver(socp);
+    EcosWrapper solver(socp);
+    //MosekWrapper solver(socp);
 
     using namespace boost::numeric::odeint;
     runge_kutta4<DiscretizationODE::state_type, double, DiscretizationODE::state_type, double, vector_space_algebra> stepper;
@@ -410,16 +410,40 @@ int main() {
         cout << endl << "Solver time: " << double( clock () - begin_time ) /  CLOCKS_PER_SEC << " seconds." << endl;
         if(!socp.feasibility_check(solver.get_solution_vector())) {
             cout << "ERROR: Solver produced an invalid solution." << endl;
-            return EXIT_FAILURE;
-        }
 
-        // Read solution
-        for (size_t k = 0; k < K; k++) {
-            for (size_t i = 0; i < n_states; ++i) X(i,k) = solver.get_solution_value(X_indices[i][k]);
-            for (size_t i = 0; i < n_inputs; ++i) U(i,k) = solver.get_solution_value(U_indices[i][k]);
-        }
-        sigma = solver.get_solution_value(sigma_index);
 
+            ofstream f(file_name_prefix + "ecos_problem.h");
+            solver.print_problem(f);
+
+
+            MosekWrapper solver_mosek(socp);
+            solver_mosek.solve_problem();
+
+
+
+            f << "\npfloat mosek_solution[] = {"; 
+            for(const auto e:solver_mosek.get_solution_vector()) {
+                f << std::scientific << std::setprecision(17) << e << ", ";
+            }
+            f << "};\n";
+            
+
+            // Read solution
+            for (size_t k = 0; k < K; k++) {
+                for (size_t i = 0; i < n_states; ++i) X(i,k) = solver_mosek.get_solution_value(X_indices[i][k]);
+                for (size_t i = 0; i < n_inputs; ++i) U(i,k) = solver_mosek.get_solution_value(U_indices[i][k]);
+            }
+            sigma = solver_mosek.get_solution_value(sigma_index);
+
+        } else {
+
+            // Read solution
+            for (size_t k = 0; k < K; k++) {
+                for (size_t i = 0; i < n_states; ++i) X(i,k) = solver.get_solution_value(X_indices[i][k]);
+                for (size_t i = 0; i < n_inputs; ++i) U(i,k) = solver.get_solution_value(U_indices[i][k]);
+            }
+            sigma = solver.get_solution_value(sigma_index);
+        }
 
         // Write solution to files
 

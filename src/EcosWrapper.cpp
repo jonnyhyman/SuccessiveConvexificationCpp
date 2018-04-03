@@ -4,6 +4,8 @@
 #include <utility>
 #include <tuple>
 #include <iostream>
+#include <iomanip>
+#include <ios>
 
 using std::pair;
 using std::tuple;
@@ -275,4 +277,69 @@ void EcosWrapper::solve_problem() {
         }
     }
     ECOS_cleanup(mywork, 0); // TODO maybe this does not need to be allocated and freed for every call? Reuse the pwork?
+}
+
+
+template<typename T>
+void write_vector(std::ostream &out, vector<T> vec) {
+    for(const auto e:vec) {
+        out << std::scientific << std::setprecision(17) << e << ", ";
+    }
+}
+
+
+void EcosWrapper::print_problem(std::ostream &out) {
+
+    vector<double> ecos_cost_function_weights_values = get_parameter_values(ecos_cost_function_weights, 1.0);
+    vector<double> ecos_h_values                     = get_parameter_values(ecos_h, 1.0);
+    vector<double> ecos_b_values                     = get_parameter_values(ecos_b, 1.0);
+    vector<double> ecos_G_data_CCS_values            = get_parameter_values(ecos_G_data_CCS, -1.0);
+    vector<double> ecos_A_data_CCS_values            = get_parameter_values(ecos_A_data_CCS, -1.0);
+
+    out << "idxint n = " << ecos_n_variables << ";\n";
+    out << "idxint m = " << ecos_n_constraint_rows << ";\n";
+    out << "idxint p = " << ecos_n_equalities << ";\n";
+    out << "idxint l = " << ecos_n_positive_constraints << ";\n";
+    out << "idxint ncones = " << ecos_n_cone_constraints << ";\n";
+    out << "idxint nex = 0;\n";
+
+    out << "pfloat c[] = {"; 
+    write_vector(out, ecos_cost_function_weights_values);
+    out << "};\n";
+
+    out << "idxint Gjc[] = {"; 
+    write_vector(out, ecos_G_columns_CCS);
+    out << "};\n";
+
+    out << "idxint Gir[] = {"; 
+    write_vector(out, ecos_G_rows_CCS);
+    out << "};\n";
+
+    out << "pfloat Gpr[] = {"; 
+    write_vector(out, ecos_G_data_CCS_values);
+    out << "};\n";
+
+    out << "pfloat h[] = {"; 
+    write_vector(out, ecos_h_values);
+    out << "};\n";
+
+    out << "idxint q[] = {"; 
+    write_vector(out, ecos_cone_constraint_dimensions);
+    out << "};\n";
+
+    out << "idxint Ajc[] = {"; 
+    write_vector(out, ecos_A_columns_CCS);
+    out << "};\n";
+
+    out << "idxint Air[] = {"; 
+    write_vector(out, ecos_A_rows_CCS);
+    out << "};\n";
+
+    out << "pfloat Apr[] = {"; 
+    write_vector(out, ecos_A_data_CCS_values);
+    out << "};\n";
+
+    out << "pfloat b[] = {"; 
+    write_vector(out, ecos_b_values);
+    out << "};\n";
 }
