@@ -296,50 +296,50 @@ void EcosWrapper::print_problem(std::ostream &out) {
     vector<double> ecos_G_data_CCS_values            = get_parameter_values(ecos_G_data_CCS, -1.0);
     vector<double> ecos_A_data_CCS_values            = get_parameter_values(ecos_A_data_CCS, -1.0);
 
-    out << "idxint n = " << ecos_n_variables << ";\n";
-    out << "idxint m = " << ecos_n_constraint_rows << ";\n";
-    out << "idxint p = " << ecos_n_equalities << ";\n";
-    out << "idxint l = " << ecos_n_positive_constraints << ";\n";
-    out << "idxint ncones = " << ecos_n_cone_constraints << ";\n";
-    out << "idxint nex = 0;\n";
+    out << "const idxint ecos_n = " << ecos_n_variables << ";\n";
+    out << "const idxint ecos_m = " << ecos_n_constraint_rows << ";\n";
+    out << "const idxint ecos_p = " << ecos_n_equalities << ";\n";
+    out << "const idxint ecos_l = " << ecos_n_positive_constraints << ";\n";
+    out << "const idxint ecos_ncones = " << ecos_n_cone_constraints << ";\n";
+    out << "const idxint ecos_nex = 0;\n";
 
-    out << "pfloat c[] = {"; 
+    out << "pfloat ecos_c[] = {"; 
     write_vector(out, ecos_cost_function_weights_values);
     out << "};\n";
 
-    out << "idxint Gjc[] = {"; 
+    out << "idxint ecos_Gjc[] = {"; 
     write_vector(out, ecos_G_columns_CCS);
     out << "};\n";
 
-    out << "idxint Gir[] = {"; 
+    out << "idxint ecos_Gir[] = {"; 
     write_vector(out, ecos_G_rows_CCS);
     out << "};\n";
 
-    out << "pfloat Gpr[] = {"; 
+    out << "pfloat ecos_Gpr[] = {"; 
     write_vector(out, ecos_G_data_CCS_values);
     out << "};\n";
 
-    out << "pfloat h[] = {"; 
+    out << "pfloat ecos_h[] = {"; 
     write_vector(out, ecos_h_values);
     out << "};\n";
 
-    out << "idxint q[] = {"; 
+    out << "idxint ecos_q[] = {"; 
     write_vector(out, ecos_cone_constraint_dimensions);
     out << "};\n";
 
-    out << "idxint Ajc[] = {"; 
+    out << "idxint ecos_Ajc[] = {"; 
     write_vector(out, ecos_A_columns_CCS);
     out << "};\n";
 
-    out << "idxint Air[] = {"; 
+    out << "idxint ecos_Air[] = {"; 
     write_vector(out, ecos_A_rows_CCS);
     out << "};\n";
 
-    out << "pfloat Apr[] = {"; 
+    out << "pfloat ecos_Apr[] = {"; 
     write_vector(out, ecos_A_data_CCS_values);
     out << "};\n";
 
-    out << "pfloat b[] = {"; 
+    out << "pfloat ecos_b[] = {"; 
     write_vector(out, ecos_b_values);
     out << "};\n";
 }

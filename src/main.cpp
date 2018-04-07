@@ -418,6 +418,8 @@ int main() {
 
             MosekWrapper solver_mosek(socp);
             solver_mosek.solve_problem();
+            cout << "Mosek check" << endl;
+            socp.feasibility_check(solver_mosek.get_solution_vector());
 
 
 
