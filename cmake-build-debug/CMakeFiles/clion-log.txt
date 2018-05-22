@@ -1,0 +1,1 @@
+WSL not found at: C:\Users\__jonny__\AppData\Local\Microsoft\WindowsApps\ubuntu.exe Configure
